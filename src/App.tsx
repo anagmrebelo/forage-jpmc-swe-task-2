@@ -36,6 +36,22 @@ class App extends Component<{}, IState> {
     return (this.state.showGraph && <Graph data={this.state.data}/>)
   }
 
+//   getDataFromServer() {
+// 	let x = 0;
+// 	const interval = setInterval(() => {
+// 		DataStreamer.getData((serverResponds: ServerRespond[]) => {
+// 			this.setState({
+// 				data: serverResponds,
+// 				showGraph: true
+// 			});
+// 		});
+// 		x++;
+// 		if (x > 1000) {
+// 			clearInterval(interval);
+// 		}
+// 	}, 100);
+// }
+
   /**
    * Get new data from server and update the state with the new data
    */
@@ -43,16 +59,18 @@ class App extends Component<{}, IState> {
 	let counterDataPoints = 0;
 	const maxDataPoints = 1000;
 
-    DataStreamer.getData((serverResponds: ServerRespond[]) => {
-      // Update the state by creating a new array of data that consists of
-      // Previous data in the state and the new data from server
-	  const interval = setInterval(() => {
-		this.setState({ data: serverResponds, showGraph: true });
-		// Limit datapoints retrieved to 1000
-		if (counterDataPoints > maxDataPoints)
-			clearInterval(interval);
-	  }, 100)
-    });
+	const interval = setInterval(() => {
+    	DataStreamer.getData((serverResponds: ServerRespond[]) => {
+			// Update the state by creating a new array of data that consists of
+			// Previous data in the state and the new data from server
+			this.setState({ data: serverResponds, showGraph: true });
+		
+			// Limit datapoints retrieved to 1000
+			counterDataPoints++;
+			if (counterDataPoints > maxDataPoints)
+				clearInterval(interval);
+		})}
+	  , 100)
   }
 
   /**
